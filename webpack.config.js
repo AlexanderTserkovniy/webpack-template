@@ -76,4 +76,19 @@ console.log('BUILD MODE: ', process.env.NODE_ENV || 'Seems like development beca
 if (process.env.NODE_ENV === 'production') {
   module.exports.plugins = []; // remove Hot Module Replacement
   module.exports.entry = resolve(__dirname, 'index.js'); // remove Hot Module Replacement
+
+  // Extract css to separate file
+  const ExtractTextPlugin = require("extract-text-webpack-plugin");
+  module.exports.plugins.push(new ExtractTextPlugin("styles.css"));
+  module.exports.module.rules[1] = {
+    test: /\.css$/,
+    exclude: /node_modules/,
+    loader: ExtractTextPlugin.extract({
+      fallbackLoader: 'style-loader',
+      loader: [
+        'css-loader?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
+        'postcss-loader'
+      ]
+    })
+  };
 }
